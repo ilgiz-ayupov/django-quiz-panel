@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-#)j+zkyyf^!@ax^_))x%1v+ea$@)fum*whs7cp#xd+!h24e@h@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    "sslserver",
     'channels',
     "admin_panel"
 ]
@@ -76,13 +75,16 @@ WSGI_APPLICATION = 'PROJECT.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+import dj_database_url
 
+db_from_env = dj_database_url.config()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+DATABASES["default"].update(db_from_env)
 
 
 # Password validation
@@ -122,6 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
