@@ -77,6 +77,16 @@
                     </table>
                 </div>
             </div>
+
+            <script>
+                // Помощь заполнения первого варианта ответа
+                const answerField = document.querySelector("#id_answer")
+                const answerOptionOneField = document.querySelector("#id_answer_option_one")
+
+                answerField.addEventListener("input", () => {
+                    answerOptionOneField.value = answerField.value
+                })
+            </script>
         </div>
     </div>
 </div>
