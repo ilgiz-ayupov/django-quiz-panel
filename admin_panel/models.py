@@ -19,10 +19,10 @@ class TelegramUser(models.Model):
         verbose_name_plural = "Пользователи Telegram"
 
 
-
 class Questions(models.Model):
     title = models.CharField(max_length=255, verbose_name="Вопрос")
     answer = models.CharField(max_length=255, verbose_name="Ответ")
+    image = models.ImageField(upload_to="question_photos/", verbose_name="Картинка", null=True, blank=True)
     answer_option_one = models.CharField(max_length=255, verbose_name="Вариант ответа 1")
     answer_option_two = models.CharField(max_length=255, verbose_name="Вариант ответа 2")
     answer_option_third = models.CharField(max_length=255, verbose_name="Вариант ответа 3")

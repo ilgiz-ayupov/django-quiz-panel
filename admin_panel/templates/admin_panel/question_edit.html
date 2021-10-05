@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row justify-content-between">
+        <div class="col-md-3">
+            {% include 'components/_sidebar.html' %}
+        </div>
+        <div class="col-md-9">
+            <div class="row justify-content-center">
+                <h2 class="text-center mt-3 mb-5">Изменить вопрос</h2>
+                {% if messages %}
+                {% for message in messages %}
+                {% if message.tags == 'error' %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+                {% else %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+
+                <form action="" method="post" enctype="multipart/form-data" style="width: 600px">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-success">Изменить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
