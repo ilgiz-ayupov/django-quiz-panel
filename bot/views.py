@@ -6,7 +6,8 @@ from .settings import BOT_TOKEN, WEBHOOK_URL
 
 
 class WebhookBot(View):
-    def get(self, request):
+    @staticmethod
+    def get(request):
         delete_webhook = f"https://api.telegram.org/bot{BOT_TOKEN}/setWebhook?drop_pending_updates=True"
         requests.post(delete_webhook)
 
