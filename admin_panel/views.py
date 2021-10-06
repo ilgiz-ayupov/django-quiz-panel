@@ -8,14 +8,15 @@ from django.contrib import messages
 from .forms import QuestionsForm
 
 
-class UsersListView(ListView):
-    model = TelegramUser
-    template_name = "admin_panel/users_list.html"
-    queryset = TelegramUser.objects.all()
-    context_object_name = "users_list"
-    extra_context = {
-        "title": "Главаная страница"
-    }
+class UsersListView(View):
+    def get(self, request):
+        active_users = TelegramUser.objects.filter(status="Проходит викторину").order_by("current_question")
+        finish_users = TelegramUser.objects.filter(status="Закончил викторину").order_by("true_answer")
+        return render(request, "admin_panel/users_list.html", {
+            "title": "Главная",
+            "active_users": active_users,
+            "finish_users": finish_users
+        })
 
 
 class QuestionsListView(View):

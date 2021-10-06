@@ -1,8 +1,17 @@
 from django.db import models
-from django.contrib.auth.models import User
 
 
 class TelegramUser(models.Model):
+    STATUS_LOGGED = "Авторизовался"
+    STATUS_ACTIVE = "Проходит викторину"
+    STATUS_END = "Закончил викторину"
+
+    STATUS_CHOICES = [
+        (STATUS_LOGGED, "Авторизовался"),
+        (STATUS_ACTIVE, "Проходит викторину"),
+        (STATUS_END, "Закончил викторину")
+    ]
+
     first_name = models.CharField(max_length=255, verbose_name="Имя")
     last_name = models.CharField(max_length=255, verbose_name="Фамилия")
     username = models.CharField(max_length=255, verbose_name="Имя пользователя")
@@ -10,6 +19,9 @@ class TelegramUser(models.Model):
     true_answer = models.PositiveIntegerField(verbose_name="Правильных ответов", null=True)
     false_answer = models.PositiveIntegerField(verbose_name="Неправильных ответов", null=True)
     current_question = models.PositiveIntegerField(verbose_name="Текущий вопрос", null=True)
+    status = models.CharField(max_length=255, verbose_name="Статус", choices=STATUS_CHOICES, default=STATUS_LOGGED)
+    start_game = models.DateTimeField(auto_now_add=True, verbose_name="Начало викторины", null=True)
+    duration_game = models.CharField(max_length=255, verbose_name="Продолжительтельность игры", null=True)
 
     def __str__(self):
         return f"{self.first_name} - {self.telegram_id}"
