@@ -31,16 +31,19 @@
   // Смена активной страницы
   const nav = document.querySelector(".nav")
   const navLink = nav.querySelectorAll(".nav-link")
-  const routes = {
-    "http://localhost:8000/": "Главная",
-    "http://localhost:8000/question_list/": "Список вопросов"
-  }
   
-  for(let i = 0; i < navLink.length; i++) {
-    if( navLink[i].textContent.trim() == routes[window.location.href] ){
+  const mainPage = `${document.location.protocol}//${document.location.host}/`
+  const questionsPage = `${document.location.protocol}//${document.location.host}/question_list/`
+
+  const routes = {}
+  routes[mainPage] = "Главная"
+  routes[questionsPage] = "Список вопросов"
+
+  for (let i = 0; i < navLink.length; i++) {
+    if (navLink[i].textContent.trim() == routes[window.location.href]) {
       navLink[i].classList.add("active")
     }
   }
 
-  
+
 </script>
