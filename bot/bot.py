@@ -101,3 +101,33 @@ def start_quiz(message: types.Message):
     database.commit()
     database.close()
     bot.send_message(chat_id, "Викторина началась !")
+    send_question(message)
+
+
+def send_question(message: types.Message, question_id: int = 1):
+    chat_id = message.chat.id
+
+    database = psycopg2.connect(
+        host=settings.DATABASES["default"]["HOST"],
+        database=settings.DATABASES["default"]["NAME"],
+        user=settings.DATABASES["default"]["USER"],
+        password=settings.DATABASES["default"]["PASSWORD"]
+    )
+    cursor = database.cursor()
+
+    cursor.execute("""SELECT 
+        title, image, answer_option_one, answer_option_two, answer_option_third, answer_option_four
+    FROM admin_panel_questions
+    WHERE id = %s
+    """, (question_id, ))
+    question = cursor.fetchone()
+    database.close()
+
+    if question:
+        text = f"""<strong>Вопрос № {question_id}</strong\n{question["title"]}"""
+        if question["image"]:
+            bot.send_photo(chat_id, photo=question["image"], caption=text)
+        else:
+            bot.send_message(chat_id, text)
+    else:
+        bot.send_message(chat_id, "Викторина закончилась !")
