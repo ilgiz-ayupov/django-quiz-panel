@@ -1,12 +1,12 @@
-from telebot import TeleBot, types
+from telebot import types
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .settings import BOT_TOKEN, WEBHOOK_URL
+from .settings import WEBHOOK_URL
 
 from django.http import HttpResponse
 from django.views import View
 
-bot = TeleBot(BOT_TOKEN)
+from .bot import bot
 
 
 class UpdateBot(APIView):
@@ -27,9 +27,3 @@ class WebhookBot(View):
         if response:
             return HttpResponse(f"<h1>Бот запущен !</h1><p>{WEBHOOK_URL}</p>")
         return HttpResponse("<h1>Ошибка запуска</h1>")
-
-
-@bot.message_handler(commands=["start"])
-def start(message: types.Message):
-    chat_id = message.chat.id
-    bot.send_message(chat_id, "Hello !")
