@@ -2,15 +2,16 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, UpdateView
 from django.views import View
-from .models import TelegramUser, Questions
 from django.contrib import messages
+from django.db.models import Q
 
+from .models import TelegramUser, Questions
 from .forms import QuestionsForm
 
 
 class UsersListView(View):
     def get(self, request):
-        active_users = TelegramUser.objects.filter(status="Проходит викторину").order_by("current_question")
+        active_users = TelegramUser.objects.filter(Q(status="Проходит викторину") | Q(status="Авторизовался")).order_by("current_question")
         finish_users = TelegramUser.objects.filter(status="Закончил викторину").order_by("true_answer")
         return render(request, "admin_panel/users_list.html", {
             "title": "Главная",
