@@ -2,6 +2,7 @@ from telebot import TeleBot, types
 from .settings import BOT_TOKEN
 from admin_panel.models import TelegramUser
 
+from .keyboards import generate_quiz_start_menu
 bot = TeleBot(BOT_TOKEN)
 
 
@@ -26,7 +27,7 @@ def start(message: types.Message):
 """
     bot.send_message(chat_id, text=text)
     register_user(message)
-    bot.send_message(chat_id, "Начать викторину ?")
+    bot.send_message(chat_id, "Начать викторину ?", reply_markup=generate_quiz_start_menu())
 
 
 def register_user(message):
@@ -44,4 +45,11 @@ def register_user(message):
         defaults={"telegram_id", telegram_id},
     )
 
+    print(user)
     bot.send_message(telegram_id, f"Авторизация прошла успешно {user}!")
+
+
+@bot.message_handler(func=lambda message: "Начать викторину" in message.text)
+def start_quiz(message: types.Message):
+    chat_id = message.chat.id
+    bot.send_message(chat_id, "Викторина началась !")
