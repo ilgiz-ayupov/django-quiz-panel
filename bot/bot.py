@@ -120,13 +120,14 @@ def send_question(message: types.Message, question_id: int = 1):
     FROM admin_panel_questions
     WHERE id = %s
     """, (question_id, ))
-    question = cursor.fetchone()
+    question: tuple = cursor.fetchone()
+    print(question)
     database.close()
 
     if question:
-        text = f"""<strong>Вопрос № {question_id}</strong\n{question["title"]}"""
-        if question["image"]:
-            bot.send_photo(chat_id, photo=question["image"], caption=text)
+        text = f"""<strong>Вопрос № {question_id}</strong\n{question[0]}"""
+        if question[1]:
+            bot.send_photo(chat_id, photo=question[1], caption=text)
         else:
             bot.send_message(chat_id, text)
     else:
