@@ -16,12 +16,12 @@ class TelegramUser(models.Model):
     last_name = models.CharField(max_length=255, verbose_name="Фамилия")
     username = models.CharField(max_length=255, verbose_name="Имя пользователя")
     telegram_id = models.IntegerField(verbose_name="Telegram ID")
-    true_answer = models.PositiveIntegerField(verbose_name="Правильных ответов", null=True, default=0)
-    false_answer = models.PositiveIntegerField(verbose_name="Неправильных ответов", null=True, default=0)
-    current_question = models.PositiveIntegerField(verbose_name="Текущий вопрос", null=True, default=0)
+    true_answer = models.PositiveIntegerField(verbose_name="Правильных ответов", default=0)
+    false_answer = models.PositiveIntegerField(verbose_name="Неправильных ответов", default=0)
+    current_question = models.PositiveIntegerField(verbose_name="Текущий вопрос", default=0)
     status = models.CharField(max_length=255, verbose_name="Статус", choices=STATUS_CHOICES, default=STATUS_LOGGED)
     start_game = models.DateTimeField(auto_now_add=True, verbose_name="Начало викторины", null=True)
-    duration_game = models.CharField(max_length=255, verbose_name="Продолжительтельность игры", null=True)
+    duration_game = models.CharField(max_length=255, verbose_name="Продолжительтельность игры", default=0)
 
     def __str__(self):
         return f"{self.first_name} - {self.telegram_id}"
