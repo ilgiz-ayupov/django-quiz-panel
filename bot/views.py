@@ -1,23 +1,35 @@
-from django.views import View
-from django.http import HttpResponse
-
-import requests
+from telebot import TeleBot, types
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from .settings import BOT_TOKEN, WEBHOOK_URL
+
+from django.http import HttpResponse
+from django.views import View
+
+bot = TeleBot(BOT_TOKEN)
+
+
+class UpdateBot(APIView):
+    @staticmethod
+    def post(request):
+        json_str = request.body.decode("UTF-8")
+        update = types.Update.de_json(json_str)
+        bot.process_new_updates([update])
+
+        return Response({"code": 200})
 
 
 class WebhookBot(View):
-    @staticmethod
-    def get(request):
-        delete_webhook = f"https://api.telegram.org/bot{BOT_TOKEN}/setWebhook?drop_pending_updates=True"
-        requests.post(delete_webhook)
+    def get(self, request):
+        print("Бот запущен !")
+        bot.delete_webhook(drop_pending_updates=True)
+        response = bot.set_webhook(url=WEBHOOK_URL)
+        if response:
+            return HttpResponse(f"<h1>Бот запущен !</h1><p>{WEBHOOK_URL}</p>")
+        return HttpResponse("<h1>Ошибка запуска</h1>")
 
-        set_webhook = f"https://api.telegram.org/bot{BOT_TOKEN}/setWebhook"
-        response = requests.post(set_webhook, params={
-            "url": WEBHOOK_URL,
-            "max_connections": 40,
-            "drop_pending_updates": True
-        })
-        return HttpResponse(f"<h1>Webhook подключен: {WEBHOOK_URL}</h1>\n {response.json()}")
 
-    def post(self, request):
-        data = request.POST
+@bot.message_handler(commands=["start"])
+def start(message: types.Message):
+    chat_id = message.chat.id
+    bot.send_message(chat_id, "Hello !")
