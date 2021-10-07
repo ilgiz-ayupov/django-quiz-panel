@@ -6,13 +6,6 @@ from .settings import BOT_TOKEN
 from .keyboards import generate_quiz_start_menu
 
 bot = TeleBot(BOT_TOKEN)
-database = psycopg2.connect(
-    host=settings.DATABASES["default"]["HOST"],
-    database=settings.DATABASES["default"]["NAME"],
-    user=settings.DATABASES["default"]["USER"],
-    password=settings.DATABASES["default"]["PASSWORD"]
-)
-cursor = database.cursor()
 
 
 @bot.message_handler(commands=["start"])
@@ -41,6 +34,15 @@ def start(message: types.Message):
 
 def register_user(message):
     """Регистрация пользователей в БД"""
+    database = psycopg2.connect(
+        host=settings.DATABASES["default"]["HOST"],
+        database=settings.DATABASES["default"]["NAME"],
+        user=settings.DATABASES["default"]["USER"],
+        password=settings.DATABASES["default"]["PASSWORD"]
+    )
+    cursor = database.cursor()
+    print(database)
+
     telegram_id = message.chat.id
     user_name = message.chat.username
     first_name = message.chat.first_name
@@ -51,7 +53,7 @@ def register_user(message):
     cursor.execute("""SELECT *
     FROM telegramuser
     WHERE telegram_id = %s
-    """, (telegram_id, ))
+    """, (telegram_id,))
     user = cursor.fetchone()
     if not user:
         cursor.execute("""
