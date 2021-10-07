@@ -65,8 +65,12 @@ def register_user(message):
     if not user:
         print("Добавление пользователя")
         cursor.execute("""
-            INSERT INTO admin_panel_telegramuser (first_name, last_name, username, telegram_id) 
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO admin_panel_telegramuser 
+            (
+                first_name, last_name, username, telegram_id, true_answer, false_answer,
+                current_question, status, duration_game
+            ) 
+            VALUES (%s, %s, %s, %s, 0, 0, 0, 'Авторизовался', 0)
         """, (first_name, last_name, user_name, telegram_id))
         bot.send_message(telegram_id, "Регистрация прошла успешно!")
     else:
