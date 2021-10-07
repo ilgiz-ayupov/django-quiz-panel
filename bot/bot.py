@@ -36,7 +36,7 @@ def register_user(message):
     user_name = message.chat.username
     first_name = message.chat.first_name
     last_name = message.chat.last_name
-
+    print("Начало регистрации ...")
     user, created = TelegramUser.objects.get_or_create(
         first_name=first_name,
         last_name=last_name,
