@@ -29,11 +29,10 @@ def start(message: types.Message):
 """
     bot.send_message(chat_id, text=text)
     try:
-        print("Регистрация")
         register_user(message)
+        bot.send_message(chat_id, "Начать викторину ?", reply_markup=generate_quiz_start_menu())
     except Exception as exp:
         print(exp.__class__.__name__, exp)
-    bot.send_message(chat_id, "Начать викторину ?", reply_markup=generate_quiz_start_menu())
 
 
 def register_user(message):
@@ -45,25 +44,18 @@ def register_user(message):
         password=settings.DATABASES["default"]["PASSWORD"]
     )
     cursor = database.cursor()
-    print(database)
 
     telegram_id = message.chat.id
     user_name = message.chat.username
     first_name = message.chat.first_name
     last_name = message.chat.last_name
-    print("Начало регистрации ...")
-    print("БАЗА ДАННЫХ ", settings.DATABASES["default"])
-
-    print(telegram_id)
 
     cursor.execute("""SELECT *
     FROM admin_panel_telegramuser
     WHERE telegram_id = %s
     """, (telegram_id,))
     user = cursor.fetchone()
-    print("USER", user)
     if not user:
-        print("Добавление пользователя")
         cursor.execute("""
             INSERT INTO admin_panel_telegramuser 
             (
@@ -72,9 +64,12 @@ def register_user(message):
             ) 
             VALUES (%s, %s, %s, %s, 0, 0, 0, 'Авторизовался', 0)
         """, (first_name, last_name, user_name, telegram_id))
+
+        database.commit()
         bot.send_message(telegram_id, "Регистрация прошла успешно!")
     else:
         bot.send_message(telegram_id, "Авторизация прошла успешно!")
+    database.close()
 
 
 @bot.message_handler(func=lambda message: "Начать викторину" in message.text)
