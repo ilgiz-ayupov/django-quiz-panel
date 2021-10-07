@@ -23,7 +23,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {% for user in active_users %}
+                            {% for user in active_users %}
                             <tr class="text-center">
                                 <td>{{ user.pk }}</td>
                                 <td>{{ user.first_name }}</td>
@@ -31,7 +31,7 @@
                                 <td>{{ user.username }}</td>
                                 <td>{{ user.current_question }}</td>
                             </tr>
-                        {% endfor %}
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -50,7 +50,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {% for user in finish_users %}
+                            {% for user in finish_users %}
                             <tr class="text-center">
                                 <td>{{ user.pk }}</td>
                                 <td>{{ user.first_name }}</td>
@@ -59,13 +59,13 @@
                                 <td>{{ user.true_answer }}</td>
                                 <td>{{ user.false_answer }}</td>
                             </tr>
-                        {% endfor %}
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
             <script>
-                setInterval(() => {location.reload()}, 5000)
+                setInterval(() => { location.reload() }, 5000)
             </script>
         </div>
     </div>

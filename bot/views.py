@@ -18,3 +18,6 @@ class WebhookBot(View):
             "drop_pending_updates": True
         })
         return HttpResponse(f"<h1>Webhook подключен: {WEBHOOK_URL}</h1>\n {response.json()}")
+
+    def post(self, request):
+        data = request.POST
