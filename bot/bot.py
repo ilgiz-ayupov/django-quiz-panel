@@ -28,7 +28,11 @@ def start(message: types.Message):
 5. Выигрывает тот игрок который ответит правильно больше остальных игроков.
 """
     bot.send_message(chat_id, text=text)
-    register_user(message)
+    try:
+        print("Регистрация")
+        register_user(message)
+    except Exception as exp:
+        print(exp.__class__.__name__, exp)
     bot.send_message(chat_id, "Начать викторину ?", reply_markup=generate_quiz_start_menu())
 
 
