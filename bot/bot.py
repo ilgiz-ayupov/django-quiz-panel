@@ -1,7 +1,7 @@
 from telebot import TeleBot, types
-from .settings import BOT_TOKEN
-from admin_panel.models import TelegramUser
+from django.conf import settings
 
+from .settings import BOT_TOKEN
 from .keyboards import generate_quiz_start_menu
 bot = TeleBot(BOT_TOKEN)
 
@@ -31,22 +31,23 @@ def start(message: types.Message):
 
 
 def register_user(message):
-    """Регистрация пользователей в БД FireStore"""
+    """Регистрация пользователей в БД"""
     telegram_id = message.chat.id
     user_name = message.chat.username
     first_name = message.chat.first_name
     last_name = message.chat.last_name
     print("Начало регистрации ...")
-    user, created = TelegramUser.objects.get_or_create(
-        first_name=first_name,
-        last_name=last_name,
-        username=user_name,
-        telegram_id=telegram_id,
-        defaults={"telegram_id", telegram_id},
-    )
-
-    print(user)
-    bot.send_message(telegram_id, f"Авторизация прошла успешно {user}!")
+    print("БАЗА ДАННЫХ ", settings.DATABASES["default"])
+    # user, created = TelegramUser.objects.get_or_create(
+    #     first_name=first_name,
+    #     last_name=last_name,
+    #     username=user_name,
+    #     telegram_id=telegram_id,
+    #     defaults={"telegram_id", telegram_id},
+    # # )
+    #
+    # print(user)
+    # bot.send_message(telegram_id, f"Авторизация прошла успешно {user}!")
 
 
 @bot.message_handler(func=lambda message: "Начать викторину" in message.text)
