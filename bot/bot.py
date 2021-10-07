@@ -1,9 +1,18 @@
 from telebot import TeleBot, types
 from django.conf import settings
+import psycopg2
 
 from .settings import BOT_TOKEN
 from .keyboards import generate_quiz_start_menu
+
 bot = TeleBot(BOT_TOKEN)
+database = psycopg2.connect(
+    host=settings.DATABASES["default"]["HOST"],
+    database=settings.DATABASES["default"]["NAME"],
+    user=settings.DATABASES["default"]["USER"],
+    password=settings.DATABASES["default"]["PASSWORD"]
+)
+cursor = database.cursor()
 
 
 @bot.message_handler(commands=["start"])
@@ -38,16 +47,20 @@ def register_user(message):
     last_name = message.chat.last_name
     print("Начало регистрации ...")
     print("БАЗА ДАННЫХ ", settings.DATABASES["default"])
-    # user, created = TelegramUser.objects.get_or_create(
-    #     first_name=first_name,
-    #     last_name=last_name,
-    #     username=user_name,
-    #     telegram_id=telegram_id,
-    #     defaults={"telegram_id", telegram_id},
-    # # )
-    #
-    # print(user)
-    # bot.send_message(telegram_id, f"Авторизация прошла успешно {user}!")
+
+    cursor.execute("""SELECT *
+    FROM telegramuser
+    WHERE telegram_id = %s
+    """, (telegram_id, ))
+    user = cursor.fetchone()
+    if not user:
+        cursor.execute("""
+            INSERT INTO telegramuser (first_name, last_name, username, telegram_id) 
+            VALUES (%s, %s, %s, %s)
+        """, (first_name, last_name, user_name, telegram_id))
+        bot.send_message(telegram_id, "Регистрация прошла успешно!")
+    else:
+        bot.send_message(telegram_id, "Авторизация прошла успешно!")
 
 
 @bot.message_handler(func=lambda message: "Начать викторину" in message.text)
