@@ -50,13 +50,16 @@ def register_user(message):
     print("Начало регистрации ...")
     print("БАЗА ДАННЫХ ", settings.DATABASES["default"])
 
+    print(telegram_id)
+
     cursor.execute("""SELECT *
     FROM admin_panel_telegramuser
     WHERE telegram_id = %s
     """, (telegram_id,))
     user = cursor.fetchone()
-    print(user)
+    print("USER", user)
     if not user:
+        print("Добавление пользователя")
         cursor.execute("""
             INSERT INTO admin_panel_telegramuser (first_name, last_name, username, telegram_id) 
             VALUES (%s, %s, %s, %s)
