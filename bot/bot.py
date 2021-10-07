@@ -1,3 +1,5 @@
+import datetime
+
 from telebot import TeleBot, types
 from django.conf import settings
 import psycopg2
@@ -75,4 +77,27 @@ def register_user(message):
 @bot.message_handler(func=lambda message: "Начать викторину" in message.text)
 def start_quiz(message: types.Message):
     chat_id = message.chat.id
+
+    # Обновление состояния пользователя:
+    #   Время начала викторины
+    #   Статус : Проходит викторину
+
+    start_game = datetime.datetime.now()
+
+    database = psycopg2.connect(
+        host=settings.DATABASES["default"]["HOST"],
+        database=settings.DATABASES["default"]["NAME"],
+        user=settings.DATABASES["default"]["USER"],
+        password=settings.DATABASES["default"]["PASSWORD"]
+    )
+    cursor = database.cursor()
+
+    cursor.execute("""UPDATE admin_panel_telegramuser
+        SET start_game = %s,
+        status = 'Проходит викторину'
+        WHERE telegram_id = %s
+    """, (start_game, chat_id))
+
+    database.commit()
+    database.close()
     bot.send_message(chat_id, "Викторина началась !")
