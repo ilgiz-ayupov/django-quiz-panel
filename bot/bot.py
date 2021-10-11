@@ -119,7 +119,7 @@ def send_question(message: types.Message, question_id: int = 1):
         title, image, answer_option_one, answer_option_two, answer_option_third, answer_option_four
     FROM admin_panel_questions
     WHERE id = %s
-    """, (question_id, ))
+    """, (question_id,))
     question: tuple = cursor.fetchone()
     print(question)
     database.close()
@@ -132,3 +132,66 @@ def send_question(message: types.Message, question_id: int = 1):
             bot.send_message(chat_id, text)
     else:
         bot.send_message(chat_id, "Викторина закончилась !")
+
+
+def check_status(message: types.Message):
+    """Проверяет статус пользователя
+        Если пользователь законччил викторину не показываем ему вопросов
+    """
+    chat_id = message.chat.id
+
+    database = psycopg2.connect(
+        host=settings.DATABASES["default"]["HOST"],
+        database=settings.DATABASES["default"]["NAME"],
+        user=settings.DATABASES["default"]["USER"],
+        password=settings.DATABASES["default"]["PASSWORD"]
+    )
+    cursor = database.cursor()
+
+    cursor.execute("""SELECT status
+    FROM admin_panel_telegramuser
+    WHERE telegram_id = %s""", (chat_id,))
+
+    database.close()
+
+    user_status = cursor.fetchone()[0]
+    return user_status == "Проходит викторину"
+
+
+@bot.message_handler(func=lambda message: check_status(message))
+def check_answer(message: types.Message):
+    """Проверка ответа пользователя"""
+    chat_id = message.chat.id
+    user_answer = message.text
+
+    database = psycopg2.connect(
+        host=settings.DATABASES["default"]["HOST"],
+        database=settings.DATABASES["default"]["NAME"],
+        user=settings.DATABASES["default"]["USER"],
+        password=settings.DATABASES["default"]["PASSWORD"]
+    )
+    cursor = database.cursor()
+
+    cursor.execute("""SELECT current_question
+        FROM admin_panel_telegramuser
+        WHERE telegram_id = %s""", (chat_id,))
+
+    current_question = cursor.fetchone()[0]
+
+    cursor.execute("""SELECT answer
+        FROM admin_panel_questions
+        WHERE id = %s""", (current_question, ))
+
+    answer = cursor.fetchone()[0]
+
+    if user_answer == answer:
+        cursor.execute("""UPDATE admin_panel_telegramuser
+            SET true_answer = true_answer + 1
+            WHERE telegram_id = %s""", (chat_id, ))
+    else:
+        cursor.execute("""UPDATE admin_panel_telegramuser
+            SET false_answer = false_answer + 1
+            WHERE telegram_id = %s
+        """, (chat_id, ))
+
+    database.close()
