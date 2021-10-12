@@ -12,5 +12,5 @@ def generate_answer_options_menu(answer_options):
     answer_options = list(set(answer_options))
     buttons = [types.KeyboardButton(text=option) for option in answer_options]
     keyboard = types.ReplyKeyboardMarkup(one_time_keyboard=True, row_width=2)
-    keyboard.add(buttons)
+    keyboard.add(*buttons)
     return keyboard
