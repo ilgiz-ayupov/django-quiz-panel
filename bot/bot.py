@@ -5,7 +5,7 @@ from django.conf import settings
 import psycopg2
 
 from .settings import BOT_TOKEN
-from .keyboards import generate_quiz_start_menu
+from .keyboards import generate_quiz_start_menu, generate_answer_options_menu
 
 bot = TeleBot(BOT_TOKEN)
 
@@ -127,9 +127,13 @@ def send_question(message: types.Message, question_id: int = 1):
     if question:
         text = f"""<strong>Вопрос № {question_id}</strong\n{question[0]}"""
         if question[1]:
-            bot.send_photo(chat_id, photo=question[1], caption=text)
+            bot.send_photo(chat_id, photo=question[1], caption=text, reply_markup=generate_answer_options_menu(
+                [question[2], question[3], question[4], question[5]]
+            ))
         else:
-            bot.send_message(chat_id, text)
+            bot.send_message(chat_id, text, reply_markup=generate_answer_options_menu(
+                [question[2], question[3], question[4], question[5]]
+            ))
     else:
         bot.send_message(chat_id, "Викторина закончилась !")
 
@@ -180,18 +184,18 @@ def check_answer(message: types.Message):
 
     cursor.execute("""SELECT answer
         FROM admin_panel_questions
-        WHERE id = %s""", (current_question, ))
+        WHERE id = %s""", (current_question,))
 
     answer = cursor.fetchone()[0]
 
     if user_answer == answer:
         cursor.execute("""UPDATE admin_panel_telegramuser
             SET true_answer = true_answer + 1
-            WHERE telegram_id = %s""", (chat_id, ))
+            WHERE telegram_id = %s""", (chat_id,))
     else:
         cursor.execute("""UPDATE admin_panel_telegramuser
             SET false_answer = false_answer + 1
             WHERE telegram_id = %s
-        """, (chat_id, ))
+        """, (chat_id,))
 
     database.close()
