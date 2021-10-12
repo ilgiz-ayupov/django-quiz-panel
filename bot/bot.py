@@ -127,13 +127,10 @@ def send_question(message: types.Message, question_id: int = 1):
     if question:
         text = f"""<strong>Вопрос № {question_id}</strong\n{question[0]}"""
         if question[1]:
-            bot.send_photo(chat_id, photo=question[1], caption=text, reply_markup=generate_answer_options_menu(
-                [question[2], question[3], question[4], question[5]]
-            ))
+            bot.send_photo(chat_id, photo=question[1], caption=text, parse_mode="HTML",
+                           reply_markup=generate_answer_options_menu(question[2:]))
         else:
-            bot.send_message(chat_id, text, reply_markup=generate_answer_options_menu(
-                [question[2], question[3], question[4], question[5]]
-            ))
+            bot.send_message(chat_id, text, parse_mode="HTML", reply_markup=generate_answer_options_menu(question[2:]))
     else:
         bot.send_message(chat_id, "Викторина закончилась !")
 
