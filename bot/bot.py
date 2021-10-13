@@ -94,7 +94,8 @@ def start_quiz(message: types.Message):
 
     cursor.execute("""UPDATE admin_panel_telegramuser
         SET start_game = %s,
-        status = 'Проходит викторину'
+        status = 'Проходит викторину',
+        current_question = 1
         WHERE telegram_id = %s
     """, (start_game, chat_id))
 
@@ -104,7 +105,7 @@ def start_quiz(message: types.Message):
     send_question(message)
 
 
-def send_question(message: types.Message, question_id: int = 1):
+def send_question(message: types.Message):
     chat_id = message.chat.id
 
     database = psycopg2.connect(
@@ -115,6 +116,12 @@ def send_question(message: types.Message, question_id: int = 1):
     )
     cursor = database.cursor()
 
+    cursor.execute("""SELECT current_answer
+    FROM admin_panel_telegramuser
+    WHERE telegram_id = %s
+    """, (chat_id, ))
+    question_id = cursor.fetchone()[0]
+
     cursor.execute("""SELECT 
         title, image, answer_option_one, answer_option_two, answer_option_third, answer_option_four
     FROM admin_panel_questions
@@ -123,7 +130,6 @@ def send_question(message: types.Message, question_id: int = 1):
     question: tuple = cursor.fetchone()
     print(question)
     database.close()
-
     if question:
         text = f"""<strong>Вопрос № {question_id}</strong\n{question[0]}"""
         if question[1]:
@@ -187,11 +193,13 @@ def check_answer(message: types.Message):
 
     if user_answer == answer:
         cursor.execute("""UPDATE admin_panel_telegramuser
-            SET true_answer = true_answer + 1
+            SET true_answer = true_answer + 1,
+            current_question = current_question + 1
             WHERE telegram_id = %s""", (chat_id,))
     else:
         cursor.execute("""UPDATE admin_panel_telegramuser
-            SET false_answer = false_answer + 1
+            SET false_answer = false_answer + 1,
+            current_question = current_question + 1
             WHERE telegram_id = %s
         """, (chat_id,))
 
